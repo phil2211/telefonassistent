@@ -1,0 +1,22 @@
+{
+  "name": "telefonassistent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ausgehender KI-Telefonassistent: Twilio Media Streams <-> xAI Grok Realtime",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test:unit": "node tests/unit.js && node tests/unit_bridge.js",
+    "test:silence-raw": "node tests/sim.js silence-raw",
+    "test:silence": "node tests/sim.js silence",
+    "test:greeting": "node tests/sim.js greeting",
+    "test:hotel": "node tests/sim.js hotel",
+    "test:blocker": "node tests/sim.js blocker"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}
