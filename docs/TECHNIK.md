@@ -3,7 +3,7 @@
 Ausgehende Telefonate im Auftrag von Philip Eschenbacher. Twilio wählt, streamt das Gesprächsaudio (G.711 µ-law, 8 kHz) per WebSocket an diese Bridge, die es 1:1 an die xAI-Realtime-API (`audio/pcmu`, ohne Umwandlung) weiterreicht und die Antwort zurückspielt.
 
 ```
-Gegenüber ⇄ Twilio (REST + <Connect><Stream>) ⇄ Bridge (Node 20, dieser Dienst, via cloudflared) ⇄ wss://api.x.ai/v1/realtime
+Gegenüber ⇄ Twilio (REST + <Connect><Stream>) ⇄ Bridge (Node 20, dieser Dienst, via ngrok oder cloudflared) ⇄ wss://api.x.ai/v1/realtime
 ```
 
 ## Dateien
@@ -22,7 +22,7 @@ Gegenüber ⇄ Twilio (REST + <Connect><Stream>) ⇄ Bridge (Node 20, dieser Die
 
 ## Auf dem eigenen Mac starten
 ```bash
-brew install node cloudflared      # Node 20+ und cloudflared (kein Cloudflare-Konto nötig)
+brew install node ngrok          # Node 20+ und ngrok (einmalig: ngrok config add-authtoken <token>)
 git clone https://github.com/phil2211/telefonassistent.git && cd telefonassistent
 npm install
 # Secrets nur lokal setzen, nie committen:
@@ -31,13 +31,13 @@ scripts/start.sh                   # Server + Tunnel, zeigt öffentliche URL
 cp auftrag.example.json auftrag.json   # Zielnummer + Auftrag eintragen
 scripts/call.sh auftrag.json       # in zweitem Terminal, löst den Anruf aus
 ```
-Der Tunnel braucht ausgehend Port 7844 (UDP/QUIC oder TCP mit `--protocol http2`). Der Laptop muss während des Anrufs wach bleiben. Transkript und Auswertung landen in `calls/` (nicht im Repo).
+ngrok läuft über Port 443; mit `TUNNEL=cloudflared` wird stattdessen ein cloudflared Quick Tunnel genutzt (braucht ausgehend Port 7844). Der Laptop muss während des Anrufs wach bleiben. Transkript und Auswertung landen in `calls/` (nicht im Repo).
 
 ## Starten
 ```bash
 export XAI_API_KEY=... TWILIO_ACCOUNT_SID=... TWILIO_AUTH_TOKEN=... TWILIO_FROM_NUMBER=+41...
 npm install            # einmalig (nur Abhängigkeit: ws)
-scripts/start.sh       # startet Server (127.0.0.1:8787) + cloudflared Quick Tunnel, zeigt öffentliche URL
+scripts/start.sh       # startet Server (127.0.0.1:8787) + Tunnel (Standard ngrok, TUNNEL=cloudflared möglich), zeigt öffentliche URL
 # in zweitem Terminal:
 scripts/call.sh auftrag.json
 # Ctrl+C im ersten Terminal beendet Server UND Tunnel (oder scripts/stop.sh)
